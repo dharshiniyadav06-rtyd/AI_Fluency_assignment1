@@ -1,0 +1,31 @@
+
+"""Step 2: test handbook retrieval and similarity scores."""
+from lc_config import get_vectorstore
+
+store = get_vectorstore()
+
+questions = [
+    "How much is the late fee for paying fees after the due date?",
+    "What time should hostel students return?",
+    "Can I write the exam with 70% attendance?",
+    "What CGPA do I need to be eligible for placements?",
+    "What is the capital of France?",
+]
+
+for q in questions:
+    print(f"\nQ: {q}")
+    results = store.similarity_search_with_score(q, k=3)
+
+    for doc, score in results:
+        print(
+            f"  Distance: {score:.3f} "
+            f"[{doc.metadata['source']}] "
+            f"{doc.page_content[:100]!r}"
+        )
+
+print("\nFiltered to library.md:")
+for doc in store.similarity_search(
+    "fine for late return", k=2, filter={"source": "library.md"}
+):
+    print(" ", doc.metadata["source"], "->",
+          doc.page_content[:80].replace("\n", " "))
